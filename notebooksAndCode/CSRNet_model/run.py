@@ -21,7 +21,8 @@ model = CSRNet()
 checkpoint = torch.load('weights.pth', map_location="cpu")
 model.load_state_dict(checkpoint)
 
-img_path = "img_to_predict_2.png"
+img_path = "training_data/unlabeled_frames_02_07/frame_0022.png"
+
 
 print("Original Image")
 plt.imshow(plt.imread(img_path))

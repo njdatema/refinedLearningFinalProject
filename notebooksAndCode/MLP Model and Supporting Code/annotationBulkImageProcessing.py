@@ -49,14 +49,6 @@ def main():
         contours, __ = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE) # finds contours on the mask 
         counter.append(len(contours))
         
-        #cv2.drawContours(imageTest,contours,-1,(255, 0, 0), -1)
-            
-        #for x in range(len(annotationData)):
-        #    cv2.circle(imageTest, (int(annotationData[x,0]),int(annotationData[x,1])), 3, (0, 255, 0), 3) # Green circle, 3px thickness
-                    
-        #cv2.imshow('Image Test',imageTest)
-        #cv2.waitKey(0)
-        
         emptyMask = np.zeros(imageTest.shape[:2], dtype="uint8") 
         contourMask = np.zeros(imageTest.shape[:2], dtype="uint8") 
         pointMask = np.zeros(imageTest.shape[:2], dtype="uint8") 
@@ -90,22 +82,22 @@ def main():
             [vx,vy,x,y] = cv2.fitLine(cnt, cv2.DIST_L2,0,0.01,0.01) # set5s up projection 
             u = [vx, vy] # forces the slope to the be accurate to the first quadrant tangent line
         
-            #pointRelativeX = x-centerPoint[1]
-            #pointRelativeY = y-centerPoint[0]
-            #radiusToPoint = math.sqrt(math.pow(pointRelativeX, 2)+math.pow(pointRelativeY, 2))
+            pointRelativeX = x-centerPoint[1]
+            pointRelativeY = y-centerPoint[0]
+            radiusToPoint = math.sqrt(math.pow(pointRelativeX, 2)+math.pow(pointRelativeY, 2))
             
-            #thetaPointRelative = abs(math.atan2(pointRelativeY,pointRelativeX))
+            thetaPointRelative = abs(math.atan2(pointRelativeY,pointRelativeX))
             
-            #v = [(pointRelativeX/radiusToPoint),(pointRelativeY/radiusToPoint)]
-            #dot_productNorm = (v[0] * u[0]) + (v[1] * u[1])/(math.sqrt(v[0]**2+v[1]**2)*math.sqrt(u[0]**2+u[1]**2))
-            #dot_productNorm = dot_productNorm.item()
+            v = [(pointRelativeX/radiusToPoint),(pointRelativeY/radiusToPoint)]
+            dot_productNorm = (v[0] * u[0]) + (v[1] * u[1])/(math.sqrt(v[0]**2+v[1]**2)*math.sqrt(u[0]**2+u[1]**2))
+            dot_productNorm = dot_productNorm.item()
             
             hull = cv2.convexHull(cnt)
             hull_area = cv2.contourArea(hull)
             solidity = float(area) / hull_area  # percept of a complex hull 
             
-            # dataX.append([radiusToPoint, thetaPointRelative, dot_productNorm, area, solidity])  #radial data storage
-            dataX.append([centerPoint[1],centerPoint[0], area, solidity])
+            dataX.append([radiusToPoint, thetaPointRelative, dot_productNorm, area, solidity])  #radial data storage
+            #dataX.append([centerPoint[1],centerPoint[0], area, solidity]) #Cartesian Strategy 
             dataY.append(count)
         missedHeads.append(len(annotationData))
         
@@ -118,7 +110,7 @@ def main():
 
     #print(dataX)
     #print(dataY)
-    print(missedHeads)
+    #print(missedHeads)
     #print(headsPer)
     #print(counter)
 
@@ -186,6 +178,3 @@ def highlightOut(imgBGR, imgBackgroundHSV, mean_colorBackground):
     return imageOut
 
 main()
-
-#missedHeads = np.load('version3ftrmissedHeads.npy')
-#print(missedHeads)
